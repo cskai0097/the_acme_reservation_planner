@@ -1,3 +1,3 @@
 # the_acme_reservation_planner
 the 'uuid' package was installed on this project
-it was to generate unique identifiers 
+it was to generate unique identifiers that was necessary for customers and restaurants 
