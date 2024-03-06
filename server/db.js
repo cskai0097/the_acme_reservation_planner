@@ -1,4 +1,5 @@
 const { Client } = require('pg');
+const {v4: uuidv4 } = require('uuid');
 const dbUrl = process.env.DATABASE_URL || 'postgres://localhost/the_acme_reservation_planner';
 const client = new Client({
     connectionString: dbUrl
@@ -26,15 +27,17 @@ async function createTables() {
         );`);
 };
 const createCustomer = async (name) => {
+    const id = uuidv4();
     const res = await client.query(
-        `INSERT INTO customers (id, name) VALUES (gen_random_uuid(), $1) RETURNING *;
-        `, [name]);
+        `INSERT INTO customers (id, name) VALUES ($1, $2) RETURNING *;`,
+        [id, name]);
     return res.rows[0];
 };
 const createRestaurant = async (name) => {
+    const id = uuidv4();
     const res = await client.query(
-        `INSERT INTO restaurants (id, name) VALUES (gen_random_uuid(), $1) RETURNING *;
-        `, [name]);
+        `INSERT INTO restaurants (id, name) VALUES ($1, $2) RETURNING *;`,
+        [id, name]);
     return res.rows[0];
 };
 const fetchCustomers = async () => {
@@ -52,13 +55,12 @@ const fetchReservations = async () => {
         SELECT * FROM reservations;`);
     return res.rows;
 };
-const createReservation = async () => {
+const createReservation = async (date, party_count, restaurant_id, customer_id) => {
     const res = await client.query(`
-        INSERT INTO reservations (id, date, party_count, restaurant_id, customer_id,) VALUES (gen_random_uuid(), $1, $2, $3, $4) RETURNING *`,
-        [date, party_count, restaurant_id, customer_id]);
+        INSERT INTO reservations (id, date, party_count, restaurant_id, customer_id) VALUES (gen_random_uuid(), $1, $2, $3, $4) RETURNING *`,[date, party_count, restaurant_id, customer_id]);
     return res.rows[0];
 };
-const destroyReservation = async () => {
+const destroyReservation = async (id) => {
     await client.query(`DELETE FROM reservations WHERE id = $1`, [id]);
 };
 

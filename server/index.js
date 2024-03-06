@@ -16,6 +16,17 @@ app.get('/api/reservations', async (req, res) => {
     const reservations = await fetchReservations();
     res.json(reservations);
 });
+app.post('/api/customers', async (req, res) => {
+    try {
+        const { name } = req.body; // Assuming the customer's name is sent in the request body
+        const newCustomer = await createCustomer(name);
+        res.status(201).json(newCustomer); // Send back the newly created customer
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 app.post('/api/customers/:id/reservations', async (req, res) => {
     const { restaurant_id , date, party_count } = req.body;
     const customer_id = req.params.id;
